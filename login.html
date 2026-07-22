@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in · PharmOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* minimal inline loading overlay – does not change existing style */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 999;
+    font-family: 'Inter', sans-serif;
+  }
+  .loading-overlay.active {
+    display: flex;
+  }
+  .loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e0e7ef;
+    border-top-color: #167A7F;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .loading-text {
+    color: #1a2b3e;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .loading-dots::after {
+    content: '...';
+    animation: dots 1.4s steps(4) infinite;
+  }
+  @keyframes dots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+  }
+</style>
+</head>
+<body>
+<div class="login-page">
+  <div class="login-brand">
+    <div class="brand-mark"><span class="dot"></span> PharmOS</div>
+    <div>
+      <div class="brand-headline">Every unit accounted for, from shelf to patient.</div>
+      <p class="brand-sub">Scan-driven dispensing, live stock levels, and expiry tracking for the pharmacy counter.</p>
+    </div>
+    <div>
+      <div class="barcode-strip" aria-hidden="true">
+        <span style="height:60%"></span><span style="height:100%"></span><span style="height:40%"></span>
+        <span style="height:80%"></span><span style="height:55%"></span><span style="height:90%"></span>
+        <span style="height:30%"></span><span style="height:70%"></span><span style="height:100%"></span>
+        <span style="height:45%"></span><span style="height:65%"></span><span style="height:85%"></span>
+        <span style="height:35%"></span><span style="height:95%"></span><span style="height:50%"></span>
+      </div>
+    </div>
+  </div>
+  <div class="login-panel">
+    <div class="login-card">
+
+      <!-- Step 1: username / password -->
+      <div id="step-credentials">
+        <h2>Welcome back</h2>
+        <p class="sub">Sign in to access the dispensing counter.</p>
+        <div class="login-error" id="login-error"></div>
+        <form id="login-form">
+          <div class="field">
+            <label for="username">Username</label>
+            <input type="text" id="username" autocomplete="username" required>
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" autocomplete="current-password" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="login-btn">Sign in</button>
+        </form>
+      </div>
+
+      <!-- Step 2: email OTP -->
+      <div id="step-otp" class="hidden">
+        <h2>Check your email</h2>
+        <p class="sub">Enter the 6-digit code we sent to <strong id="otp-email-hint">—</strong>.</p>
+        <div class="login-error" id="otp-error"></div>
+        <div class="login-error otp-dev-note" id="otp-dev-note"></div>
+
+        <form id="otp-form">
+          <div class="otp-digit-row" id="otp-digit-row">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-idx="0">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-idx="1">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-idx="2">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-idx="3">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-idx="4">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-idx="5">
+          </div>
+          <button type="submit" class="btn btn-primary" id="verify-otp-btn">Verify &amp; sign in</button>
+        </form>
+
+        <div class="otp-footer-row">
+          <button type="button" class="btn btn-ghost btn-sm" id="back-to-login-btn">Use a different account</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="resend-otp-btn">Resend code</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Signing you in <span class="loading-dots"></span></div>
+</div>
+
+<script>
+const stepCredentials = document.getElementById('step-credentials');
+const stepOtp = document.getElementById('step-otp');
+const otpDigits = Array.from(document.querySelectorAll('.otp-digit'));
+let resendTimer = null;
+
+// loading overlay elements
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+// helpers for loading (added without altering existing logic)
+function showLoading() {
+  loadingOverlay.classList.add('active');
+}
+function hideLoading() {
+  loadingOverlay.classList.remove('active');
+}
+
+function showError(boxId, message) {
+  const box = document.getElementById(boxId);
+  box.textContent = message;
+  box.classList.add('show');
+}
+function hideError(boxId) {
+  document.getElementById(boxId).classList.remove('show');
+}
+
+/* ---------------- Step 1: credentials ---------------- */
+
+document.getElementById('login-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  hideError('login-error');
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  // Show loading overlay (for a few minutes simulation)
+  showLoading();
+
+  try {
+    const res = await fetch('api/login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: document.getElementById('username').value.trim(),
+        password: document.getElementById('password').value,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Login failed.');
+    }
+    // hide loading before entering OTP step (but we keep it brief)
+    hideLoading();
+    enterOtpStep(data);
+  } catch (err) {
+    hideLoading(); // hide on error
+    showError('login-error', err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+  }
+});
+
+/* ---------------- Step 2: OTP entry ---------------- */
+
+function enterOtpStep(data) {
+  stepCredentials.classList.add('hidden');
+  stepOtp.classList.remove('hidden');
+  document.getElementById('otp-email-hint').textContent = data.email_hint || 'your email';
+  hideError('otp-error');
+
+  const devNote = document.getElementById('otp-dev-note');
+  if (data.dev_note) {
+    devNote.textContent = data.dev_note;
+    devNote.classList.add('show');
+  } else {
+    devNote.classList.remove('show');
+  }
+
+  otpDigits.forEach((d) => { d.value = ''; });
+  otpDigits[0].focus();
+  startResendCooldown(45);
+}
+
+otpDigits.forEach((input, i) => {
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 1);
+    if (input.value && i < otpDigits.length - 1) {
+      otpDigits[i + 1].focus();
+    }
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !input.value && i > 0) {
+      otpDigits[i - 1].focus();
+    }
+  });
+  input.addEventListener('paste', (e) => {
+    const text = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+    if (!text) return;
+    e.preventDefault();
+    text.split('').slice(0, otpDigits.length).forEach((ch, idx) => {
+      if (otpDigits[idx]) otpDigits[idx].value = ch;
+    });
+    const nextEmpty = otpDigits.find((d) => !d.value);
+    (nextEmpty || otpDigits[otpDigits.length - 1]).focus();
+  });
+});
+
+document.getElementById('otp-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const code = otpDigits.map((d) => d.value).join('');
+  const btn = document.getElementById('verify-otp-btn');
+  hideError('otp-error');
+
+  if (code.length !== otpDigits.length) {
+    showError('otp-error', `Enter all ${otpDigits.length} digits.`);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Verifying…';
+  // show loading while verifying OTP (simulate a few minutes)
+  showLoading();
+
+  try {
+    const res = await fetch('api/verify_otp.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Verification failed.');
+    }
+    // keep loading visible for a few moments (simulate "few minutes" – here we show it for 3 sec as demo)
+    // you can adjust the delay, but we keep the loading active until redirect
+    // the redirection will happen after a short delay to simulate processing
+    await new Promise(resolve => setTimeout(resolve, 2000)); // 2 sec demo, you can increase
+    window.location.href = 'index.html';
+  } catch (err) {
+    hideLoading();
+    showError('otp-error', err.message);
+    otpDigits.forEach((d) => { d.value = ''; });
+    otpDigits[0].focus();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Verify & sign in';
+    // if error, loading already hidden; if success, redirect happens before finally
+    // but we ensure loading is hidden if any error occurs
+    if (document.querySelector('#otp-error.show')) {
+      hideLoading();
+    }
+  }
+});
+
+document.getElementById('back-to-login-btn').addEventListener('click', () => {
+  stepOtp.classList.add('hidden');
+  stepCredentials.classList.remove('hidden');
+  hideError('otp-error');
+  clearInterval(resendTimer);
+  document.getElementById('password').value = '';
+  document.getElementById('username').focus();
+  hideLoading(); // ensure loading is hidden
+});
+
+document.getElementById('resend-otp-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('resend-otp-btn');
+  if (btn.disabled) return;
+  hideError('otp-error');
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('api/resend_otp.php', { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Could not resend the code.');
+    }
+    const devNote = document.getElementById('otp-dev-note');
+    if (data.dev_note) {
+      devNote.textContent = data.dev_note;
+      devNote.classList.add('show');
+    }
+    startResendCooldown(45);
+  } catch (err) {
+    showError('otp-error', err.message);
+    btn.disabled = false;
+  }
+});
+
+function startResendCooldown(seconds) {
+  const btn = document.getElementById('resend-otp-btn');
+  clearInterval(resendTimer);
+  let remaining = seconds;
+  btn.disabled = true;
+  btn.textContent = `Resend code (${remaining}s)`;
+  resendTimer = setInterval(() => {
+    remaining -= 1;
+    if (remaining <= 0) {
+      clearInterval(resendTimer);
+      btn.disabled = false;
+      btn.textContent = 'Resend code';
+    } else {
+      btn.textContent = `Resend code (${remaining}s)`;
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>

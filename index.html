@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmOS · Pharmacy Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+  /* loading overlay – added for logout */
+  .logout-loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 9999;
+    font-family: 'Inter', sans-serif;
+  }
+  .logout-loading-overlay.active {
+    display: flex;
+  }
+  .logout-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e0e7ef;
+    border-top-color: #1e5c8b;
+    border-radius: 50%;
+    animation: logoutSpin 0.9s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes logoutSpin {
+    to { transform: rotate(360deg); }
+  }
+  .logout-loading-text {
+    color: #1a2b3e;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .logout-loading-dots::after {
+    content: '...';
+    animation: logoutDots 1.4s steps(4) infinite;
+  }
+  @keyframes logoutDots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGOUT LOADING OVERLAY -->
+<div class="logout-loading-overlay" id="logoutLoadingOverlay">
+  <div class="logout-loading-spinner"></div>
+  <div class="logout-loading-text">Logging out <span class="logout-loading-dots"></span></div>
+</div>
+
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand-mark"><span class="dot"></span> PharmOS</div>
+
+    <button class="nav-item active" data-view="dashboard"><span class="icon">&#9635;</span> Dashboard</button>
+    <button class="nav-item" data-view="scan"><span class="icon">&#9642;</span> Scan Out</button>
+    <button class="nav-item" data-view="inventory"><span class="icon">&#9776;</span> Inventory</button>
+    <button class="nav-item" data-view="sales"><span class="icon">&#8801;</span> Sales Log</button>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-meta">
+          <div class="name" id="user-name">—</div>
+          <div class="role" id="user-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logout-btn" style="width:100%;">Log out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="flex gap-8" style="align-items:center;">
+        <button class="menu-toggle" id="menu-toggle">&#9776;</button>
+        <h1 id="view-title">Dashboard</h1>
+      </div>
+      <div class="text-muted mono" id="clock" style="font-size:13px;"></div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <section class="view active" id="view-dashboard">
+      <div class="grid metrics-grid">
+        <div class="card metric-card accent-teal">
+          <div class="label">Total Stock Items</div>
+          <div class="value" id="m-total-items">—</div>
+          <div class="delta">SKUs currently tracked</div>
+        </div>
+        <div class="card metric-card accent-amber">
+          <div class="label">Low Stock Alerts</div>
+          <div class="value" id="m-low-stock">—</div>
+          <div class="delta">At or below reorder level</div>
+        </div>
+        <div class="card metric-card accent-teal">
+          <div class="label">Today's Sales</div>
+          <div class="value" id="m-today-sales">—</div>
+          <div class="delta" id="m-today-revenue">—</div>
+        </div>
+        <div class="card metric-card accent-coral">
+          <div class="label">Near Expiry</div>
+          <div class="value" id="m-near-expiry">—</div>
+          <div class="delta">Within 30 days</div>
+        </div>
+      </div>
+
+      <div class="grid two-col">
+        <div class="card">
+          <div class="section-title">Recent Outgoing Activity <span class="hint">last 10 transactions</span></div>
+          <div id="recent-activity-wrap"><div class="empty-state">Loading…</div></div>
+        </div>
+        <div class="card">
+          <div class="section-title">Low Stock &amp; Near Expiry <span class="hint">needs attention</span></div>
+          <div id="alerts-wrap"><div class="empty-state">Loading…</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCAN VIEW -->
+    <section class="view" id="view-scan">
+      <div class="scan-console">
+        <div class="scan-console-head">
+          <div>
+            <h2>Scan Out</h2>
+            <p>Scan a barcode or enter it manually to dispense a unit.</p>
+          </div>
+        </div>
+
+        <div class="scan-readout">
+          <div class="scan-input-row">
+            <input type="text" id="barcode-input" placeholder="Scan or type a barcode, then press Enter" autofocus autocomplete="off">
+            <button class="btn btn-secondary" id="lookup-btn" style="background:rgba(255,255,255,0.1); color:#fff;">Look up</button>
+          </div>
+          <div class="scan-status-line">
+            <span class="pulse"></span>
+            <span id="scan-status-text">Ready — waiting for input</span>
+          </div>
+          <div class="camera-toggle-row">
+            <button class="btn btn-sm" id="camera-toggle-btn" style="background:rgba(255,255,255,0.1); color:#fff;">Use camera scanner</button>
+          </div>
+          <div id="camera-wrap"><div id="qr-reader"></div></div>
+        </div>
+      </div>
+
+      <div class="scan-result" id="scan-result">
+        <div id="scan-alerts"></div>
+        <div class="scan-result-head">
+          <div>
+            <h3 id="sr-name">—</h3>
+            <div class="meta" id="sr-meta">—</div>
+          </div>
+          <span class="badge" id="sr-badge">—</span>
+        </div>
+        <div class="scan-facts">
+          <div class="scan-fact"><div class="label">Stock Qty</div><div class="val" id="sr-stock">—</div></div>
+          <div class="scan-fact"><div class="label">Reorder Level</div><div class="val" id="sr-reorder">—</div></div>
+          <div class="scan-fact"><div class="label">Expiry Date</div><div class="val" id="sr-expiry">—</div></div>
+          <div class="scan-fact"><div class="label">Unit Price</div><div class="val" id="sr-price">—</div></div>
+        </div>
+        <div class="scan-actions">
+          <label class="text-muted" style="font-size:13px;" for="sell-qty">Qty</label>
+          <input type="number" id="sell-qty" class="qty-input" value="1" min="1">
+          <button class="btn btn-primary" id="confirm-sale-btn">Confirm Dispensation</button>
+          <button class="btn btn-ghost" id="clear-scan-btn">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVENTORY VIEW -->
+    <section class="view" id="view-inventory">
+      <div class="toolbar">
+        <div class="search-box">
+          <span>&#128269;</span>
+          <input type="text" id="inventory-search" placeholder="Search by name, barcode, or category">
+        </div>
+        <label class="flex gap-8" style="font-size:13px; color:var(--text-secondary);">
+          <input type="checkbox" id="low-stock-filter"> Low stock only
+        </label>
+        <button class="btn btn-primary right" id="add-drug-btn">+ Add Drug</button>
+      </div>
+      <div class="card" style="padding:0; overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Drug</th><th>Barcode</th><th>Category</th><th>Form</th>
+              <th>Stock</th><th>Reorder</th><th>Expiry</th><th>Price</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="inventory-tbody">
+            <tr><td colspan="9" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SALES LOG VIEW -->
+    <section class="view" id="view-sales">
+      <div class="toolbar">
+        <div class="search-box">
+          <span>&#128269;</span>
+          <input type="text" id="sales-search" placeholder="Search by drug name">
+        </div>
+        <input type="date" id="sales-date-filter" class="field" style="padding:9px 12px; border:1px solid var(--border); border-radius:6px;">
+      </div>
+      <div class="card" style="padding:0; overflow-x:auto;">
+        <table>
+          <thead>
+            <tr><th>Drug</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Sold By</th><th>Date / Time</th></tr>
+          </thead>
+          <tbody id="sales-tbody">
+            <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex gap-8" style="margin-top:14px; justify-content:center;" id="sales-pagination"></div>
+    </section>
+  </div>
+</div>
+
+<!-- Add/Edit Drug Modal -->
+<div class="modal-backdrop" id="drug-modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="drug-modal-title">Add Drug</h3>
+      <button class="modal-close" id="drug-modal-close">&times;</button>
+    </div>
+    <form id="drug-form">
+      <input type="hidden" id="drug-id">
+      <div class="form-grid">
+        <div class="field full">
+          <label for="drug-barcode">Barcode</label>
+          <input type="text" id="drug-barcode" required>
+        </div>
+        <div class="field full">
+          <label for="drug-name">Drug Name</label>
+          <input type="text" id="drug-name" required>
+        </div>
+        <div class="field">
+          <label for="drug-category">Category</label>
+          <input type="text" id="drug-category" required>
+        </div>
+        <div class="field">
+          <label for="drug-strength">Strength</label>
+          <input type="text" id="drug-strength" placeholder="e.g. 500mg">
+        </div>
+        <div class="field">
+          <label for="drug-form">Form</label>
+          <select id="drug-form">
+            <option>Tablet</option><option>Capsule</option><option>Syrup</option>
+            <option>Injection</option><option>Cream</option><option>Drops</option>
+            <option>Inhaler</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="drug-price">Price</label>
+          <input type="number" id="drug-price" step="0.01" min="0" required>
+        </div>
+        <div class="field">
+          <label for="drug-stock">Stock Quantity</label>
+          <input type="number" id="drug-stock" min="0" required>
+        </div>
+        <div class="field">
+          <label for="drug-reorder">Reorder Level</label>
+          <input type="number" id="drug-reorder" min="0" required>
+        </div>
+        <div class="field full">
+          <label for="drug-expiry">Expiry Date</label>
+          <input type="date" id="drug-expiry" required>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="drug-cancel-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="drug-save-btn">Save Drug</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script src="js/app.js"></script>
+<script src="js/scanner.js"></script>
+
+<!-- logout with loading overlay - integrated with API call -->
+<script>
+  (function() {
+    const logoutBtn = document.getElementById('logout-btn');
+    const loadingOverlay = document.getElementById('logoutLoadingOverlay');
+    
+    // Remove any existing click listeners by cloning and replacing
+    const newLogoutBtn = logoutBtn.cloneNode(true);
+    logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+    
+    newLogoutBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      // Show loading overlay
+      loadingOverlay.classList.add('active');
+      
+      try {
+        // Call logout API
+        const response = await fetch('api/logout.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        const data = await response.json();
+        
+        // Small delay to show loading (simulate "few minutes")
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Redirect to login page regardless of response
+        window.location.href = 'login.html';
+        
+      } catch (error) {
+        console.error('Logout error:', error);
+        // Still redirect even if API fails
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+      }
+    });
+  })();
+</script>
+</body>
+</html>
