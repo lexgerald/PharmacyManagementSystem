@@ -129,6 +129,8 @@ const viewTitles = {
   scan: 'Scan Out',
   inventory: 'Inventory',
   sales: 'Sales Log',
+  financial: 'Financial Statement',
+   users: 'User Management',
 };
 
 function loadView(view) {
@@ -468,7 +470,6 @@ async function saveDrug(e) {
     btn.disabled = false;
   }
 }
-
 /* ---------------- Sales Log ---------------- */
 
 function initSalesLog() {

@@ -633,3 +633,75 @@ tbody tr:hover { background: var(--teal-100); }
   animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+
+
+
+/* User Management Styles */
+.user-management {
+  margin-top: 20px;
+}
+.user-management .toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.user-management .toolbar .btn {
+  margin-left: auto;
+}
+.user-table-wrap {
+  overflow-x: auto;
+}
+.user-table-wrap table {
+  font-size: 13px;
+}
+.user-table-wrap table th {
+  background: var(--bg);
+  font-size: 11px;
+}
+.user-table-wrap table td,
+.user-table-wrap table th {
+  padding: 10px 12px;
+}
+.user-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.user-status-badge.active {
+  background: var(--success-100);
+  color: var(--success);
+}
+.user-status-badge.inactive {
+  background: var(--coral-100);
+  color: var(--coral);
+}
+.user-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.user-role-badge.admin {
+  background: var(--teal-100);
+  color: var(--teal-600);
+}
+.user-role-badge.user {
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.user-role-badge.super_admin {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}

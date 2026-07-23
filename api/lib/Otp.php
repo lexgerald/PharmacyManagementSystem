@@ -33,10 +33,11 @@ class Otp
 
         $minutes = (int)ceil(OTP_TTL_SECONDS / 60);
         $subject = 'Your PharmOS verification code';
-        $body = "Hi {$user['full_name']},\n\n"
-            . "Your PharmOS sign-in code is: {$code}\n\n"
-            . "This code expires in {$minutes} minutes. If you didn't request this, you can ignore this email.\n\n"
-            . "— PharmOS";
+        $body = "Hello {$user['full_name']},\n\n"
+            . "You must confirm your identity using the one-time pass code : {$code}\n\n"
+            . "Note: This code will expires in {$minutes} minutes.\n\n"
+            . "Sincerely,\n"
+            . "PharmOS";
 
         SmtpMailer::send($user['email'], $user['full_name'], $subject, $body);
 

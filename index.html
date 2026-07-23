@@ -52,6 +52,348 @@
     50% { content: '..'; }
     75% { content: '...'; }
   }
+
+  /* Topbar logout button style */
+  .topbar-logout-btn {
+    background: #2a7276;
+    color: #fff;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s ease;
+    font-family: 'Inter', sans-serif;
+  }
+  .topbar-logout-btn:hover {
+    background: #167A7F;
+  }
+
+  /* Print receipt button style */
+  .print-receipt-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #167A7F;
+    font-size: 16px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  .print-receipt-btn:hover {
+    background: rgba(22, 122, 127, 0.1);
+    color: #0d5a5e;
+  }
+  .print-receipt-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Receipt print styles */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #receipt-print-area, #receipt-print-area * {
+      visibility: visible;
+    }
+    #receipt-print-area {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      padding: 20px;
+      background: white;
+      font-family: 'Courier New', monospace;
+    }
+    .no-print {
+      display: none !important;
+    }
+  }
+
+  /* Receipt preview modal */
+  .receipt-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+  .receipt-modal-backdrop.active {
+    display: flex;
+  }
+  .receipt-modal {
+    background: white;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .receipt-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e7ef;
+  }
+  .receipt-modal-head h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #1a2b3e;
+  }
+  .receipt-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7a8f;
+    padding: 0 8px;
+  }
+  .receipt-modal-close:hover {
+    color: #1a2b3e;
+  }
+  .receipt-content {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1a2b3e;
+  }
+  .receipt-content .receipt-header {
+    text-align: center;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .receipt-content .receipt-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #167A7F;
+  }
+  .receipt-content .receipt-header p {
+    margin: 4px 0;
+    font-size: 12px;
+    color: #6b7a8f;
+  }
+  .receipt-content .receipt-divider {
+    border-top: 1px dashed #ccc;
+    margin: 10px 0;
+  }
+  .receipt-content .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+  .receipt-content .receipt-row.total {
+    font-weight: bold;
+    font-size: 16px;
+    border-top: 2px solid #1a2b3e;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  .receipt-content .receipt-footer {
+    text-align: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #ccc;
+    font-size: 12px;
+    color: #6b7a8f;
+  }
+  .receipt-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e7ef;
+  }
+  .receipt-modal-actions button {
+    flex: 1;
+  }
+
+  /* Financial Statement Styles */
+  .financial-statement {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-top: 20px;
+    border: 1px solid var(--border);
+  }
+  .financial-statement .fs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .financial-statement .fs-header h3 {
+    font-size: 18px;
+    color: var(--ink-900);
+  }
+  .financial-statement .fs-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .financial-statement .fs-filters select,
+  .financial-statement .fs-filters input {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    background: var(--surface);
+    color: var(--text-primary);
+  }
+  .financial-statement .fs-filters select:focus,
+  .financial-statement .fs-filters input:focus {
+    outline: none;
+    border-color: var(--teal-500);
+    box-shadow: 0 0 0 3px rgba(22,122,127,0.15);
+  }
+  .fs-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 768px) {
+    .fs-summary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .fs-summary-item {
+    background: var(--bg);
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-soft);
+  }
+  .fs-summary-item .fs-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .fs-summary-item .fs-value {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--ink-900);
+    margin-top: 4px;
+  }
+  .fs-summary-item .fs-value.positive { color: var(--success); }
+  .fs-summary-item .fs-value.negative { color: var(--coral); }
+  .fs-table-wrap {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+  .fs-table-wrap table {
+    font-size: 13px;
+  }
+  .fs-table-wrap table th {
+    background: var(--bg);
+    font-size: 11px;
+  }
+  .fs-table-wrap table td,
+  .fs-table-wrap table th {
+    padding: 10px 12px;
+  }
+  .fs-no-data {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+  }
+  .fs-loading {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-muted);
+  }
+  .fs-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .fs-actions .btn {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  /* User Management Styles */
+  .user-management {
+    margin-top: 20px;
+  }
+  .user-management .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .user-management .toolbar .btn {
+    margin-left: auto;
+  }
+  .user-table-wrap {
+    overflow-x: auto;
+  }
+  .user-table-wrap table {
+    font-size: 13px;
+  }
+  .user-table-wrap table th {
+    background: var(--bg);
+    font-size: 11px;
+  }
+  .user-table-wrap table td,
+  .user-table-wrap table th {
+    padding: 10px 12px;
+  }
+  .user-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .user-status-badge.active {
+    background: var(--success-100);
+    color: var(--success);
+  }
+  .user-status-badge.inactive {
+    background: var(--coral-100);
+    color: var(--coral);
+  }
+  .user-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .user-role-badge.admin {
+    background: var(--teal-100);
+    color: var(--teal-600);
+  }
+  .user-role-badge.user {
+    background: var(--bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .user-role-badge.super_admin {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+  }
 </style>
 </head>
 <body>
@@ -62,15 +404,34 @@
   <div class="logout-loading-text">Logging out <span class="logout-loading-dots"></span></div>
 </div>
 
+<!-- Receipt Modal -->
+<div class="receipt-modal-backdrop" id="receiptModal">
+  <div class="receipt-modal">
+    <div class="receipt-modal-head">
+      <h3>Receipt</h3>
+      <button class="receipt-modal-close" id="receiptModalClose">&times;</button>
+    </div>
+    <div class="receipt-content" id="receiptContent">
+      <!-- Receipt content will be dynamically inserted here -->
+    </div>
+    <div class="receipt-modal-actions">
+      <button class="btn btn-primary" id="printReceiptBtn">🖨️ Print</button>
+      <button class="btn btn-ghost" id="closeReceiptBtn">Close</button>
+    </div>
+  </div>
+</div>
+
 <div class="app-shell">
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="brand-mark"><span class="dot"></span> PharmOS</div>
 
-    <button class="nav-item active" data-view="dashboard"><span class="icon">&#9635;</span> Dashboard</button>
-    <button class="nav-item" data-view="scan"><span class="icon">&#9642;</span> Scan Out</button>
-    <button class="nav-item" data-view="inventory"><span class="icon">&#9776;</span> Inventory</button>
-    <button class="nav-item" data-view="sales"><span class="icon">&#8801;</span> Sales Log</button>
+    <button class="nav-item active" data-view="dashboard"><span class="icon">📊</span> Dashboard</button>
+    <button class="nav-item" data-view="scan"><span class="icon">📷</span> Scan Out</button>
+    <button class="nav-item" data-view="inventory"><span class="icon">📋</span> Inventory</button>
+    <button class="nav-item" data-view="sales"><span class="icon">📈</span> Sales Log</button>
+    <button class="nav-item" data-view="financial"><span class="icon">💰</span> Financial Statement</button>
+    <button class="nav-item" data-view="users"><span class="icon">👥</span> Users</button>
 
     <div class="sidebar-footer">
       <div class="user-chip">
@@ -91,7 +452,10 @@
         <button class="menu-toggle" id="menu-toggle">&#9776;</button>
         <h1 id="view-title">Dashboard</h1>
       </div>
-      <div class="text-muted mono" id="clock" style="font-size:13px;"></div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="text-muted mono" id="clock" style="font-size:13px;"></div>
+        <button class="topbar-logout-btn" id="topbar-logout-btn">➔Logout</button>
+      </div>
     </div>
 
     <!-- DASHBOARD VIEW -->
@@ -121,7 +485,7 @@
 
       <div class="grid two-col">
         <div class="card">
-          <div class="section-title">Recent Outgoing Activity <span class="hint">last 10 transactions</span></div>
+          <div class="section-title">Recent Sales<span class="hint">last 10 transactions</span></div>
           <div id="recent-activity-wrap"><div class="empty-state">Loading…</div></div>
         </div>
         <div class="card">
@@ -220,14 +584,114 @@
       <div class="card" style="padding:0; overflow-x:auto;">
         <table>
           <thead>
-            <tr><th>Drug</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Sold By</th><th>Date / Time</th></tr>
+            <tr>
+              <th>Drug</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Total</th>
+              <th>Sold By</th>
+              <th>Date / Time</th>
+              <th>Receipt</th>
+            </tr>
           </thead>
           <tbody id="sales-tbody">
-            <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+            <tr><td colspan="7" class="empty-state">Loading…</td></tr>
           </tbody>
         </table>
       </div>
       <div class="flex gap-8" style="margin-top:14px; justify-content:center;" id="sales-pagination"></div>
+    </section>
+
+    <!-- FINANCIAL STATEMENT VIEW -->
+    <section class="view" id="view-financial">
+      <div class="financial-statement">
+        <div class="fs-header">
+          <h3>📊 Financial Statement</h3>
+          <div class="fs-filters">
+            <select id="fs-month">
+              <option value="all">All Months</option>
+              <option value="01">January</option>
+              <option value="02">February</option>
+              <option value="03">March</option>
+              <option value="04">April</option>
+              <option value="05">May</option>
+              <option value="06">June</option>
+              <option value="07">July</option>
+              <option value="08">August</option>
+              <option value="09">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+            <input type="number" id="fs-year" placeholder="Year" min="2000" max="2099" style="width:100px;">
+            <button class="btn btn-secondary btn-sm" id="fs-export-btn">📥 Export</button>
+            <button class="btn btn-primary btn-sm" id="fs-apply-btn">Apply</button>
+            
+          </div>
+        </div>
+
+        <div class="fs-summary-grid" id="fs-summary">
+          <div class="fs-summary-item">
+            <div class="fs-label">Total Transactions</div>
+            <div class="fs-value" id="fs-total-transactions">—</div>
+          </div>
+          <div class="fs-summary-item">
+            <div class="fs-label">Total Revenue</div>
+            <div class="fs-value positive" id="fs-total-revenue">—</div>
+          </div>
+        </div>
+
+        <div class="fs-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Drug</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Sold By</th>
+              </tr>
+            </thead>
+            <tbody id="fs-tbody">
+              <tr><td colspan="6" class="fs-loading">Loading financial data…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="fs-actions">
+          <button class="btn btn-primary btn-sm" id="fs-print-btn">🖨️ Print Statement</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- USERS VIEW -->
+    <section class="view" id="view-users">
+      <div class="user-management">
+        <div class="toolbar">
+          <h2 style="font-size:18px;">👥 User Management</h2>
+          <button class="btn btn-primary" id="add-user-btn">+ Add User</button>
+        </div>
+        <div class="card" style="padding:0; overflow-x:auto;">
+          <div class="user-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <tr><td colspan="7" class="empty-state">Loading users…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 </div>
@@ -244,15 +708,15 @@
       <div class="form-grid">
         <div class="field full">
           <label for="drug-barcode">Barcode</label>
-          <input type="text" id="drug-barcode" required>
+          <input type="text" id="drug-barcode" placeholder="Enter product barcode" required>
         </div>
         <div class="field full">
           <label for="drug-name">Drug Name</label>
-          <input type="text" id="drug-name" required>
+          <input type="text" id="drug-name" placeholder="Enter product name" required>
         </div>
         <div class="field">
           <label for="drug-category">Category</label>
-          <input type="text" id="drug-category" required>
+          <input type="text" id="drug-category" placeholder="Enter category name" required>
         </div>
         <div class="field">
           <label for="drug-strength">Strength</label>
@@ -268,7 +732,7 @@
         </div>
         <div class="field">
           <label for="drug-price">Price</label>
-          <input type="number" id="drug-price" step="0.01" min="0" required>
+          <input type="number" id="drug-price" step="0.01" min="0" placeholder="e.g. 100" required>
         </div>
         <div class="field">
           <label for="drug-stock">Stock Quantity</label>
@@ -291,6 +755,55 @@
   </div>
 </div>
 
+<!-- Add/Edit User Modal -->
+<div class="modal-backdrop" id="user-modal-backdrop">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-head">
+      <h3 id="user-modal-title">Add User</h3>
+      <button class="modal-close" id="user-modal-close">&times;</button>
+    </div>
+    <form id="user-form">
+      <input type="hidden" id="user-id">
+      <div class="form-grid">
+        <div class="field full">
+          <label for="user-username">Username</label>
+          <input type="text" id="user-username" placeholder="Enter username" required>
+        </div>
+        <div class="field full">
+          <label for="user-fullname">Full Name</label>
+          <input type="text" id="user-fullname" placeholder="Enter full name" required>
+        </div>
+        <div class="field full">
+          <label for="user-email">Email</label>
+          <input type="email" id="user-email" placeholder="Enter email address" required>
+        </div>
+        <div class="field">
+          <label for="user-password">Password</label>
+          <input type="password" id="user-password" placeholder="Min 6 characters" required>
+        </div>
+        <div class="field">
+          <label for="user-role">Role</label>
+          <select id="user-role" required>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="user-status">Status</label>
+          <select id="user-status">
+            <option value="1">Active</option>
+            <option value="0">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="user-cancel-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="user-save-btn">Save User</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="toast-stack" id="toast-stack"></div>
 
 <script src="js/app.js"></script>
@@ -300,13 +813,11 @@
 <script>
   (function() {
     const logoutBtn = document.getElementById('logout-btn');
+    const topbarLogoutBtn = document.getElementById('topbar-logout-btn');
     const loadingOverlay = document.getElementById('logoutLoadingOverlay');
     
-    // Remove any existing click listeners by cloning and replacing
-    const newLogoutBtn = logoutBtn.cloneNode(true);
-    logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
-    
-    newLogoutBtn.addEventListener('click', async function(e) {
+    // Function to handle logout
+    async function handleLogout(e) {
       e.preventDefault();
       
       // Show loading overlay
@@ -336,7 +847,760 @@
           window.location.href = 'login.html';
         }, 2000);
       }
+    }
+    
+    // Remove existing listeners by cloning and replacing for sidebar logout
+    if (logoutBtn) {
+      const newLogoutBtn = logoutBtn.cloneNode(true);
+      logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+      newLogoutBtn.addEventListener('click', handleLogout);
+    }
+    
+    // Add listener for topbar logout button
+    if (topbarLogoutBtn) {
+      const newTopbarBtn = topbarLogoutBtn.cloneNode(true);
+      topbarLogoutBtn.parentNode.replaceChild(newTopbarBtn, topbarLogoutBtn);
+      newTopbarBtn.addEventListener('click', handleLogout);
+    }
+  })();
+
+  // Receipt printing functionality
+  (function() {
+    const receiptModal = document.getElementById('receiptModal');
+    const receiptContent = document.getElementById('receiptContent');
+    const receiptModalClose = document.getElementById('receiptModalClose');
+    const closeReceiptBtn = document.getElementById('closeReceiptBtn');
+    const printReceiptBtn = document.getElementById('printReceiptBtn');
+
+    // Store the latest sales data for receipt generation
+    let latestSalesData = [];
+
+    // Helper function to format date properly
+    function formatDateForReceipt(dateStr) {
+      if (!dateStr) return '—';
+      
+      try {
+        let dateObj;
+        if (dateStr instanceof Date) {
+          dateObj = dateStr;
+        } else if (typeof dateStr === 'string' && dateStr.includes(' ')) {
+          const isoStr = dateStr.replace(' ', 'T');
+          dateObj = new Date(isoStr);
+        } else if (typeof dateStr === 'string' && dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          dateObj = new Date(dateStr + 'T00:00:00');
+        } else {
+          dateObj = new Date(dateStr);
+        }
+        
+        if (isNaN(dateObj.getTime())) {
+          return dateStr;
+        }
+        
+        return dateObj.toLocaleString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit', 
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      } catch (e) {
+        return dateStr || '—';
+      }
+    }
+
+    // Function to generate receipt HTML with all details
+    function generateReceipt(saleData) {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+      const timeStr = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+      });
+
+      const unitPrice = parseFloat(saleData.unit_price) || 0;
+      const quantity = parseInt(saleData.quantity) || 1;
+      const total = parseFloat(saleData.total_price) || (unitPrice * quantity);
+      const transactionDate = formatDateForReceipt(saleData.sold_at);
+
+      return `
+        <div class="receipt-header">
+          <h2>🏥 PharmOS</h2>
+          <p>Pharmacy Management System</p>
+          <p>${dateStr} • ${timeStr}</p>
+          <p style="font-size:11px; color:#999;">Receipt #: ${saleData.id || 'N/A'}</p>
+        </div>
+        
+        <div class="receipt-divider"></div>
+        
+        <div class="receipt-row" style="font-weight:bold; margin-bottom:5px;">
+          <span>Item Details</span>
+          <span></span>
+        </div>
+        
+        <div class="receipt-row">
+          <span>Drug Name</span>
+          <span>${saleData.drug_name || 'Unknown Drug'}</span>
+        </div>
+        
+        <div class="receipt-row">
+          <span>Quantity</span>
+          <span>${quantity}</span>
+        </div>
+        
+        <div class="receipt-row">
+          <span>Unit Price</span>
+          <span>Le${unitPrice.toFixed(2)}</span>
+        </div>
+        
+        <div class="receipt-divider"></div>
+        
+        <div class="receipt-row total">
+          <span>TOTAL AMOUNT</span>
+          <span>Le${total.toFixed(2)}</span>
+        </div>
+        
+        <div class="receipt-divider"></div>
+        
+        <div class="receipt-row" style="font-size:12px; color:#6b7a8f;">
+          <span>Sold By</span>
+          <span>${saleData.user_name || 'Staff'}</span>
+        </div>
+        
+        <div class="receipt-row" style="font-size:12px; color:#6b7a8f;">
+          <span>Transaction Date</span>
+          <span>${transactionDate}</span>
+        </div>
+        
+        <div class="receipt-footer">
+          <p>Thank you for your purchase!</p>
+          <p style="font-size:10px; color:#999;">Items dispensed are non-returnable</p>
+          <p style="font-size:10px; color:#999; margin-top:5px;">This is a computer generated receipt</p>
+        </div>
+      `;
+    }
+
+    // Override the renderSalesTable function to store data and add print buttons
+    const originalRenderSalesTable = window.renderSalesTable;
+    window.renderSalesTable = function(rows) {
+      latestSalesData = rows;
+      if (originalRenderSalesTable) {
+        originalRenderSalesTable(rows);
+      }
+      setTimeout(addPrintButtonsToSales, 100);
+    };
+
+    // Function to open receipt modal
+    window.openReceipt = function(saleData) {
+      receiptContent.innerHTML = generateReceipt(saleData);
+      receiptModal.classList.add('active');
+    };
+
+    function closeReceiptModal() {
+      receiptModal.classList.remove('active');
+    }
+
+    receiptModalClose.addEventListener('click', closeReceiptModal);
+    closeReceiptBtn.addEventListener('click', closeReceiptModal);
+    receiptModal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeReceiptModal();
+      }
     });
+
+    // Print receipt
+    printReceiptBtn.addEventListener('click', function() {
+      const printContent = receiptContent.innerHTML;
+      const printWindow = window.open('', '_blank', 'width=400,height=600');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Receipt</title>
+            <style>
+              body { font-family: 'Courier New', monospace; padding: 20px; margin: 0; background: white; }
+              .receipt-content { max-width: 300px; margin: 0 auto; }
+              .receipt-header { text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px; margin-bottom: 10px; }
+              .receipt-header h2 { margin: 0; font-size: 18px; color: #167A7F; }
+              .receipt-header p { margin: 4px 0; font-size: 12px; color: #6b7a8f; }
+              .receipt-divider { border-top: 1px dashed #ccc; margin: 10px 0; }
+              .receipt-row { display: flex; justify-content: space-between; padding: 4px 0; }
+              .receipt-row.total { font-weight: bold; font-size: 16px; border-top: 2px solid #1a2b3e; padding-top: 10px; margin-top: 10px; }
+              .receipt-footer { text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #ccc; font-size: 12px; color: #6b7a8f; }
+              @media print { body { margin: 0; padding: 10px; } }
+            </style>
+          </head>
+          <body>
+            <div class="receipt-content">${printContent}</div>
+            <script>
+              window.onload = function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+              };
+            <\/script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    });
+
+    function extractSaleDataFromRow(row, index) {
+      const cells = row.querySelectorAll('td');
+      if (cells.length < 6) return null;
+      
+      const drugName = cells[0]?.textContent?.trim() || '';
+      const quantityText = cells[1]?.textContent?.trim() || '0';
+      const priceText = cells[2]?.textContent?.trim().replace(/[$,Le\s]/g, '') || '0';
+      const totalText = cells[3]?.textContent?.trim().replace(/[$,Le\s]/g, '') || '0';
+      const soldBy = cells[4]?.textContent?.trim() || 'Staff';
+      const dateText = cells[5]?.textContent?.trim() || '';
+      
+      let saleData = null;
+      for (const data of latestSalesData) {
+        if (data.drug_name === drugName && 
+            data.quantity === parseInt(quantityText) && 
+            Math.abs(parseFloat(data.unit_price) - parseFloat(priceText)) < 0.01) {
+          saleData = data;
+          break;
+        }
+      }
+      
+      if (!saleData) {
+        saleData = {
+          id: 'PH-' + Date.now().toString().slice(-8) + Math.floor(Math.random() * 1000),
+          drug_name: drugName,
+          quantity: parseInt(quantityText) || 1,
+          unit_price: parseFloat(priceText) || 0,
+          total_price: parseFloat(totalText) || 0,
+          user_name: soldBy,
+          sold_at: dateText || new Date().toISOString(),
+          barcode: 'N/A'
+        };
+      }
+      
+      return saleData;
+    }
+
+    function addPrintButtonsToSales() {
+      const tbody = document.getElementById('sales-tbody');
+      if (!tbody) return;
+      
+      const rows = tbody.querySelectorAll('tr');
+      rows.forEach((row, index) => {
+        if (row.querySelector('.empty-state')) return;
+        if (row.querySelector('th')) return;
+        if (row.querySelector('.print-receipt-btn')) return;
+        
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 6) {
+          const saleData = extractSaleDataFromRow(row, index);
+          if (!saleData) return;
+          
+          const printCell = document.createElement('td');
+          printCell.style.textAlign = 'center';
+          
+          const printBtn = document.createElement('button');
+          printBtn.className = 'print-receipt-btn';
+          printBtn.innerHTML = '🖨️';
+          printBtn.title = 'Print Receipt';
+          printBtn.setAttribute('aria-label', 'Print receipt');
+          
+          printBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.openReceipt(saleData);
+          });
+          
+          printCell.appendChild(printBtn);
+          
+          if (cells.length === 7) {
+            row.replaceChild(printCell, cells[6]);
+          } else {
+            row.appendChild(printCell);
+          }
+        }
+      });
+    }
+
+    const salesTbody = document.getElementById('sales-tbody');
+    if (salesTbody) {
+      const observer = new MutationObserver(function(mutations) {
+        let shouldUpdate = false;
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'childList' || mutation.type === 'subtree') {
+            shouldUpdate = true;
+          }
+        });
+        if (shouldUpdate) {
+          setTimeout(addPrintButtonsToSales, 200);
+        }
+      });
+      
+      observer.observe(salesTbody, { childList: true, subtree: true });
+      setTimeout(addPrintButtonsToSales, 500);
+      setTimeout(addPrintButtonsToSales, 2000);
+      setTimeout(addPrintButtonsToSales, 5000);
+    }
+
+    const salesNav = document.querySelector('[data-view="sales"]');
+    if (salesNav) {
+      salesNav.addEventListener('click', function() {
+        setTimeout(addPrintButtonsToSales, 300);
+        setTimeout(addPrintButtonsToSales, 1000);
+      });
+    }
+
+    document.addEventListener('salesDataLoaded', function() {
+      setTimeout(addPrintButtonsToSales, 200);
+    });
+
+    window.refreshPrintButtons = addPrintButtonsToSales;
+  })();
+
+  // ============================================================
+  // FINANCIAL STATEMENT FEATURE - MONTH BASED FILTERING (Jan-Dec)
+  // ============================================================
+  (function() {
+    const fsMonth = document.getElementById('fs-month');
+    const fsYear = document.getElementById('fs-year');
+    const fsApplyBtn = document.getElementById('fs-apply-btn');
+    const fsExportBtn = document.getElementById('fs-export-btn');
+    const fsPrintBtn = document.getElementById('fs-print-btn');
+    const fsTbody = document.getElementById('fs-tbody');
+    const fsTotalTransactions = document.getElementById('fs-total-transactions');
+    const fsTotalRevenue = document.getElementById('fs-total-revenue');
+
+    let currentFinancialData = [];
+
+    // Set default year to current year
+    const currentYear = new Date().getFullYear();
+    fsYear.value = currentYear;
+
+    // Fetch financial data based on filters
+    async function loadFinancialStatement() {
+      const month = fsMonth.value;
+      const year = fsYear.value;
+      
+      fsTbody.innerHTML = '<tr><td colspan="6" class="fs-loading">Loading financial data…</td></tr>';
+      
+      try {
+        let url = 'api/sales.php?';
+        const params = [];
+        
+        // Add month filter if not "all"
+        if (month !== 'all') {
+          params.push('month=' + month);
+        }
+        
+        // Add year filter if provided
+        if (year && year.trim() !== '') {
+          params.push('year=' + year);
+        }
+        
+        // Add limit=all to get all records without pagination
+        params.push('limit=all');
+        
+        url += params.join('&');
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to load financial data');
+        }
+        
+        currentFinancialData = data.sales || [];
+        renderFinancialStatement(currentFinancialData);
+        
+      } catch (error) {
+        console.error('Financial statement error:', error);
+        fsTbody.innerHTML = `<tr><td colspan="6" class="fs-no-data">Error loading financial data: ${error.message}</td></tr>`;
+        toast('Error loading financial data', 'error');
+      }
+    }
+
+    // Render financial statement
+    function renderFinancialStatement(sales) {
+      // Calculate summary
+      let totalRevenue = 0;
+      
+      sales.forEach(sale => {
+        totalRevenue += parseFloat(sale.total_price) || 0;
+      });
+      
+      const totalTransactions = sales.length;
+      
+      // Update summary cards
+      fsTotalTransactions.textContent = totalTransactions;
+      fsTotalRevenue.textContent = money(totalRevenue);
+      
+      // Render table
+      if (!sales.length) {
+        fsTbody.innerHTML = '<tr><td colspan="6" class="fs-no-data">No transactions found for this period.</td></tr>';
+        return;
+      }
+      
+      fsTbody.innerHTML = sales.map(sale => `
+        <tr>
+          <td>${fmtDateTime(sale.sold_at)}</td>
+          <td><strong>${escapeHtml(sale.drug_name)}</strong></td>
+          <td class="mono">${sale.quantity}</td>
+          <td class="mono">${money(sale.unit_price)}</td>
+          <td class="mono">${money(sale.total_price)}</td>
+          <td>${escapeHtml(sale.user_name)}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Apply filters
+    fsApplyBtn.addEventListener('click', loadFinancialStatement);
+
+    // Also load when Enter key is pressed in year field
+    fsYear.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        loadFinancialStatement();
+      }
+    });
+
+    // Export to CSV
+    fsExportBtn.addEventListener('click', function() {
+      if (!currentFinancialData.length) {
+        toast('No data to export', 'warn');
+        return;
+      }
+      
+      const headers = ['Date', 'Drug', 'Quantity', 'Unit Price', 'Total', 'Sold By'];
+      const rows = currentFinancialData.map(sale => [
+        sale.sold_at,
+        sale.drug_name,
+        sale.quantity,
+        parseFloat(sale.unit_price).toFixed(2),
+        parseFloat(sale.total_price).toFixed(2),
+        sale.user_name
+      ]);
+      
+      const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `financial_statement_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast('Financial statement exported successfully', 'success');
+    });
+
+    // Print financial statement
+    fsPrintBtn.addEventListener('click', function() {
+      if (!currentFinancialData.length) {
+        toast('No data to print', 'warn');
+        return;
+      }
+      
+      const month = fsMonth.value;
+      const year = fsYear.value;
+      let periodLabel = 'All Months';
+      
+      if (month !== 'all' && year && year.trim() !== '') {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        const monthName = monthNames[parseInt(month) - 1];
+        periodLabel = `${monthName} ${year}`;
+      } else if (year && year.trim() !== '' && month === 'all') {
+        periodLabel = `All Months - ${year}`;
+      }
+      
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Financial Statement</title>
+            <style>
+              body { font-family: 'Inter', sans-serif; padding: 40px; background: white; }
+              h1 { color: #167A7F; font-family: 'Space Grotesk', sans-serif; }
+              .header { margin-bottom: 30px; border-bottom: 2px solid #e0e7ef; padding-bottom: 20px; }
+              .header p { color: #6b7a8f; margin: 4px 0; }
+              .summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 30px; }
+              .summary-item { background: #f6faf9; padding: 14px 16px; border-radius: 6px; }
+              .summary-item .label { font-size: 11px; text-transform: uppercase; color: #8ca0a4; font-weight: 600; }
+              .summary-item .value { font-size: 22px; font-weight: 600; color: #0b2027; margin-top: 4px; }
+              table { width: 100%; border-collapse: collapse; font-size: 13px; }
+              th { text-align: left; font-size: 11px; text-transform: uppercase; color: #8ca0a4; padding: 10px 12px; border-bottom: 1px solid #d9e4e3; }
+              td { padding: 10px 12px; border-bottom: 1px solid #e9f0ef; }
+              .mono { font-family: 'IBM Plex Mono', monospace; }
+              .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e7ef; text-align: center; color: #8ca0a4; font-size: 12px; }
+              @media print { body { padding: 20px; } }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>📊 PharmOS Financial Statement</h1>
+              <p>Period: ${periodLabel}</p>
+              <p>Generated: ${new Date().toLocaleString()}</p>
+            </div>
+            
+            <div class="summary">
+              <div class="summary-item">
+                <div class="label">Total Transactions</div>
+                <div class="value">${fsTotalTransactions.textContent}</div>
+              </div>
+              <div class="summary-item">
+                <div class="label">Total Revenue</div>
+                <div class="value">${fsTotalRevenue.textContent}</div>
+              </div>
+            </div>
+            
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Drug</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Sold By</th></tr>
+              </thead>
+              <tbody>
+                ${currentFinancialData.map(sale => `
+                  <tr>
+                    <td>${fmtDateTime(sale.sold_at)}</td>
+                    <td><strong>${escapeHtml(sale.drug_name)}</strong></td>
+                    <td class="mono">${sale.quantity}</td>
+                    <td class="mono">${money(sale.unit_price)}</td>
+                    <td class="mono">${money(sale.total_price)}</td>
+                    <td>${escapeHtml(sale.user_name)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            
+            <div class="footer">
+              <p>This is a computer generated financial statement</p>
+              <p>PharmOS Pharmacy Management System</p>
+            </div>
+            
+            <script>
+              window.onload = function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+              };
+            <\/script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    });
+
+    // Override the view titles to include financial
+    const viewTitles = window.viewTitles || {};
+    viewTitles.financial = 'Financial Statement';
+    window.viewTitles = viewTitles;
+
+    // Load financial data when view is shown
+    const fsNav = document.querySelector('[data-view="financial"]');
+    if (fsNav) {
+      fsNav.addEventListener('click', function() {
+        setTimeout(loadFinancialStatement, 300);
+      });
+    }
+
+    // Initial load
+    setTimeout(loadFinancialStatement, 500);
+
+    // Expose function to manually load
+    window.loadFinancialStatement = loadFinancialStatement;
+  })();
+
+  // ============================================================
+  // USER MANAGEMENT
+  // ============================================================
+  (function() {
+    let usersCache = [];
+    
+    // Elements
+    const usersTbody = document.getElementById('users-tbody');
+    const addUserBtn = document.getElementById('add-user-btn');
+    const userModal = document.getElementById('user-modal-backdrop');
+    const userModalClose = document.getElementById('user-modal-close');
+    const userCancelBtn = document.getElementById('user-cancel-btn');
+    const userForm = document.getElementById('user-form');
+    const userId = document.getElementById('user-id');
+    const userUsername = document.getElementById('user-username');
+    const userFullname = document.getElementById('user-fullname');
+    const userEmail = document.getElementById('user-email');
+    const userPassword = document.getElementById('user-password');
+    const userRole = document.getElementById('user-role');
+    const userStatus = document.getElementById('user-status');
+    const userModalTitle = document.getElementById('user-modal-title');
+    
+    // Check if we have all required elements
+    if (!addUserBtn || !userModal) {
+      console.error('User management elements not found');
+      return;
+    }
+    
+    // Load users
+    window.loadUsers = async function() {
+      usersTbody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading users…</td></tr>';
+      
+      try {
+        const response = await fetch('api/users.php');
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to load users');
+        }
+        
+        usersCache = data.users || [];
+        renderUsers(usersCache);
+        
+      } catch (error) {
+        console.error('Error loading users:', error);
+        usersTbody.innerHTML = `<tr><td colspan="7" class="empty-state">Error loading users: ${error.message}</td></tr>`;
+        toast('Error loading users', 'error');
+      }
+    };
+    
+    // Render users table
+    function renderUsers(users) {
+      if (!users.length) {
+        usersTbody.innerHTML = '<tr><td colspan="7" class="empty-state">No users found. Click "Add User" to create one.</td></tr>';
+        return;
+      }
+      
+      const currentUser = window.currentUser || {};
+      
+      usersTbody.innerHTML = users.map(user => {
+        const isSuperAdmin = user.role === 'super_admin';
+        const isCurrentUser = user.id === currentUser.id;
+        
+        return `
+          <tr>
+            <td><strong>${escapeHtml(user.username)}</strong></td>
+            <td>${escapeHtml(user.full_name)}</td>
+            <td>${escapeHtml(user.email)}</td>
+            <td><span class="user-role-badge ${user.role}">${escapeHtml(user.role)}</span></td>
+            <td><span class="user-status-badge ${user.is_active ? 'active' : 'inactive'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>
+            <td style="font-size:12px; color:var(--text-muted);">${user.created_at ? fmtDateTime(user.created_at) : '—'}</td>
+            <td>
+              <div class="flex gap-8">
+                ${!isSuperAdmin ? `<button class="btn btn-ghost btn-sm" onclick="editUser(${user.id})">Edit</button>` : '<span class="text-muted" style="font-size:11px;">Super Admin</span>'}
+                ${!isSuperAdmin && user.id !== currentUser.id ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id}, '${escapeHtml(user.username).replace(/'/g, "\\'")}')">Delete</button>` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    // Open user modal for add/edit
+    window.openUserModal = function(user = null) {
+      userModalTitle.textContent = user ? 'Edit User' : 'Add User';
+      userId.value = user ? user.id : '';
+      userUsername.value = user ? user.username : '';
+      userFullname.value = user ? user.full_name : '';
+      userEmail.value = user ? user.email : '';
+      userPassword.value = '';
+      userPassword.required = !user;
+      userRole.value = user ? user.role : 'user';
+      userStatus.value = user ? (user.is_active ? '1' : '0') : '1';
+      userModal.classList.add('show');
+    };
+    
+    window.editUser = function(id) {
+      const user = usersCache.find(u => u.id === id);
+      if (user) openUserModal(user);
+    };
+    
+    window.deleteUser = async function(id, username) {
+      if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+      
+      try {
+        const response = await fetch(`api/users.php?id=${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to delete user');
+        }
+        
+        toast('User deleted successfully', 'success');
+        window.loadUsers();
+        
+      } catch (error) {
+        toast(error.message, 'error');
+      }
+    };
+    
+    // Save user (add/edit)
+    userForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const id = userId.value;
+      const payload = {
+        username: userUsername.value.trim(),
+        full_name: userFullname.value.trim(),
+        email: userEmail.value.trim(),
+        password: userPassword.value,
+        role: userRole.value,
+        is_active: parseInt(userStatus.value)
+      };
+      if (id) payload.id = parseInt(id);
+      
+      const btn = document.getElementById('user-save-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      
+      try {
+        const method = id ? 'PUT' : 'POST';
+        const response = await fetch('api/users.php', {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to save user');
+        }
+        
+        toast(id ? 'User updated successfully' : 'User created successfully', 'success');
+        closeUserModal();
+        window.loadUsers();
+        
+      } catch (error) {
+        toast(error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save User';
+      }
+    });
+    
+    // Close user modal
+    function closeUserModal() {
+      userModal.classList.remove('show');
+      userForm.reset();
+      userId.value = '';
+    }
+    
+    userModalClose.addEventListener('click', closeUserModal);
+    userCancelBtn.addEventListener('click', closeUserModal);
+    userModal.addEventListener('click', function(e) {
+      if (e.target === this) closeUserModal();
+    });
+    
+    addUserBtn.addEventListener('click', () => openUserModal());
+    
+    // Load users when view is shown
+    const usersNav = document.querySelector('[data-view="users"]');
+    if (usersNav) {
+      usersNav.addEventListener('click', function() {
+        setTimeout(window.loadUsers, 300);
+      });
+    }
+    
+    // Initial load (if view is active)
+    setTimeout(window.loadUsers, 500);
+    
+    // Expose functions
+    window.refreshUsers = window.loadUsers;
   })();
 </script>
 </body>

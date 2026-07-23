@@ -34,7 +34,7 @@ Edit `api/config.php` if your MySQL credentials differ from the XAMPP defaults:
 
 ```php
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'pharmacy_pms');
+define('DB_NAME', 'pms');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 ```
@@ -42,23 +42,18 @@ define('DB_PASS', '');
 ## 3. Configure email OTP (second sign-in factor)
 
 Every login now requires a 6-digit code emailed to the user before a session is created. `api/config.php` controls this:
-Go to your Google Account → Security → make sure 2-Step Verification is turned on (required for app passwords)
-Go to https://myaccount.google.com/apppasswords
-Create a new app password (name it anything, e.g. "PharmOS")
-Google gives you a 16-character password like abcd efgh ijkl mnop — copy it (remove the spaces)
 
-2. Edit api/config.php:
+```php
+define('MAIL_DEV_MODE', true);   // true = don't send real email; write the code to logs/otp_dev.log instead
 
-php
-define('MAIL_DEV_MODE', false);          // turn off dev-mode logging
-
-define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_HOST', '');          // e.g. 'smtp.gmail.com' or 'sandbox.smtp.mailtrap.io'
 define('SMTP_PORT', 587);
-define('SMTP_SECURE', 'tls');
-define('SMTP_USERNAME', 'youraddress@gmail.com');
-define('SMTP_PASSWORD', 'abcdefghijklmnop');   // the 16-char app password, no spaces
-define('MAIL_FROM_EMAIL', 'youraddress@gmail.com');
+define('SMTP_SECURE', 'tls');     // 'tls' | 'ssl' | ''
+define('SMTP_USERNAME', '');
+define('SMTP_PASSWORD', '');
+define('MAIL_FROM_EMAIL', 'no-reply@pharmos.local');
 define('MAIL_FROM_NAME', 'PharmOS');
+```
 
 **For local testing (no mail server needed):** leave `MAIL_DEV_MODE` as `true`. Codes are appended to `logs/otp_dev.log` instead of being emailed — open that file after signing in to grab the code. No composer/PHPMailer dependency is needed; `api/lib/SmtpMailer.php` is a small self-contained SMTP client.
 
@@ -103,62 +98,6 @@ After entering the password you'll be asked for a 6-digit code. With `MAIL_DEV_M
 ```bash
 php -r "echo password_hash('your-new-password', PASSWORD_BCRYPT), PHP_EOL;"
 ```
-and update the `password_hash` column for that user; update the `email` column the same way via `UPDATE users SET email = '...' WHERE username = '...'`.
-
-## Try it out
-
-Sample barcodes to scan or type into the Scan Out console:
-
-| Barcode         | Drug                    | Notes                          |
-|-----------------|-------------------------|---------------------------------|
-| 8901030875021   | Paracetamol 500mg       | Healthy stock                   |
-| 8901030875038   | Amoxicillin 250mg       | Below reorder level (low stock) |
-| 8901030875052   | Cough Syrup 100ml       | Low stock                       |
-| 8901030875076   | Omeprazole 20mg         | Out of stock (quantity = 0)     |
-| 8901030875113   | Artemether/Lumefantrine | Expires within 30 days          |
+and update the `password_hash` column for that user; update the `email` column the same way via `UPDATE users SET email = '...' WHERE username = '...          |
 
 The camera scanner needs HTTPS or `localhost` to access the device camera (a browser requirement, not specific to this app) — `http://localhost/...` works fine for local testing.
-
-## Project structure
-
-```
-pms/
-├── login.html              Login screen
-├── index.html               Main application shell (dashboard/scan/inventory/sales)
-├── css/style.css            Design system + all styling
-├── js/app.js                Application logic (routing, API calls, rendering)
-├── js/scanner.js             Camera barcode scanning (html5-qrcode)
-├── api/
-│   ├── config.php           DB connection + OTP/SMTP settings
-│   ├── auth.php              Session helpers + JSON response helpers
-│   ├── login.php             POST — verify password, issue email OTP
-│   ├── verify_otp.php         POST — verify OTP, complete login
-│   ├── resend_otp.php         POST — resend OTP (rate-limited)
-│   ├── logout.php            POST — end session
-│   ├── session.php           GET  — check current session
-│   ├── dashboard.php         GET  — dashboard metrics
-│   ├── drugs.php             GET/POST/PUT/DELETE — inventory CRUD
-│   ├── scan.php              POST — barcode lookup
-│   ├── sell.php               POST — process a dispensation
-│   ├── sales.php              GET  — paginated sales history
-│   └── lib/
-│       ├── Otp.php            Generates/hashes/verifies OTP codes
-│       └── SmtpMailer.php      Dependency-free SMTP client (+ dev-log fallback)
-├── logs/                    otp_dev.log written here in MAIL_DEV_MODE
-│   └── .htaccess             Blocks direct web access to this folder
-├── database/
-│   ├── schema.sql            Tables, indexes, and sample data (fresh install)
-│   ├── migration_add_otp.sql Adds email + login_otps to an existing DB
-│   └── .htaccess             Blocks direct web access to this folder
-```
-
-## Security notes
-
-- All SQL uses PDO prepared statements — no string-concatenated queries anywhere.
-- Passwords are stored as bcrypt hashes (`password_hash()` / `password_verify()`).
-- Login is two-factor: a correct password only grants a *pending* state, not a session — a valid OTP is also required. Codes are hashed with HMAC-SHA256 (`APP_KEY`) before storage, never kept in plain text, compared with `hash_equals()`, expire after 10 minutes, allow 5 wrong guesses before requiring a fresh code, and are rate-limited on resend (45s cooldown).
-- Every API endpoint except `login.php`, `verify_otp.php`, and `resend_otp.php` requires an active, fully-verified session.
-- Session cookies are set `HttpOnly` and `SameSite=Lax`; the session ID is regenerated both when the pending OTP state starts and again when it's completed, to resist session fixation.
-- Input is validated server-side on every write (`drugs.php`, `sell.php`).
-- `logs/` and `database/` each ship with an `.htaccess` denying all direct web access (Apache/XAMPP). If you deploy on **Nginx** instead, Apache `.htaccess` files are ignored — add an equivalent `location { deny all; }` block for both paths in your server config, since the dev OTP log and raw SQL/schema files must never be reachable by URL.
-- For production use, also add: HTTPS, CSRF tokens on state-changing requests, rate limiting on the password step itself (not just OTP resend), and a dedicated (non-root) MySQL user with least-privilege grants. Also set `MAIL_DEV_MODE` to `false` and configure real SMTP — dev mode must never be left on in production, since it writes codes to a log file instead of emailing them.

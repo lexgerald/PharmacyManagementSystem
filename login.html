@@ -52,6 +52,51 @@
     50% { content: '..'; }
     75% { content: '...'; }
   }
+
+  /* Password toggle eye styles - added without changing existing code */
+  .password-field-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  
+  .password-field-wrapper input[type="password"],
+  .password-field-wrapper input[type="text"] {
+    width: 100%;
+    padding-right: 40px;
+  }
+  
+  .toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #6b7a8f;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .toggle-password-btn:hover {
+    color: #1a2b3e;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  .toggle-password-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(22, 122, 127, 0.2);
+  }
+  
+  .toggle-password-btn .eye-icon {
+    display: inline-block;
+    line-height: 1;
+  }
 </style>
 </head>
 <body>
@@ -87,7 +132,12 @@
           </div>
           <div class="field">
             <label for="password">Password</label>
-            <input type="password" id="password" autocomplete="current-password" required>
+            <div class="password-field-wrapper">
+              <input type="password" id="password" autocomplete="current-password" required>
+              <button type="button" class="toggle-password-btn" id="togglePasswordBtn" aria-label="Show password">
+                <span class="eye-icon">👁️‍🗨️</span>
+              </button>
+            </div>
           </div>
           <button type="submit" class="btn btn-primary" id="login-btn">Sign in</button>
         </form>
@@ -136,6 +186,27 @@ let resendTimer = null;
 
 // loading overlay elements
 const loadingOverlay = document.getElementById('loadingOverlay');
+
+// Password toggle functionality - added without changing existing code
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleBtn = document.getElementById('togglePasswordBtn');
+  const passwordInput = document.getElementById('password');
+  const eyeIcon = toggleBtn.querySelector('.eye-icon');
+  
+  if (toggleBtn && passwordInput) {
+    toggleBtn.addEventListener('click', function() {
+      // Toggle password visibility
+      const isPassword = passwordInput.getAttribute('type') === 'password';
+      passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+      
+      // Update eye icon
+      eyeIcon.textContent = isPassword ? '👁️‍🗨️' : '👁️';
+      
+      // Toggle aria-label
+      toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+    });
+  }
+});
 
 // helpers for loading (added without altering existing logic)
 function showLoading() {
