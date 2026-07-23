@@ -42,18 +42,23 @@ define('DB_PASS', '');
 ## 3. Configure email OTP (second sign-in factor)
 
 Every login now requires a 6-digit code emailed to the user before a session is created. `api/config.php` controls this:
+Go to your Google Account → Security → make sure 2-Step Verification is turned on (required for app passwords)
+Go to https://myaccount.google.com/apppasswords
+Create a new app password (name it anything, e.g. "PharmOS")
+Google gives you a 16-character password like abcd efgh ijkl mnop — copy it (remove the spaces)
 
-```php
-define('MAIL_DEV_MODE', true);   // true = don't send real email; write the code to logs/otp_dev.log instead
+2. Edit api/config.php:
 
-define('SMTP_HOST', '');          // e.g. 'smtp.gmail.com' or 'sandbox.smtp.mailtrap.io'
+php
+define('MAIL_DEV_MODE', false);          // turn off dev-mode logging
+
+define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
-define('SMTP_SECURE', 'tls');     // 'tls' | 'ssl' | ''
-define('SMTP_USERNAME', '');
-define('SMTP_PASSWORD', '');
-define('MAIL_FROM_EMAIL', 'no-reply@pharmos.local');
+define('SMTP_SECURE', 'tls');
+define('SMTP_USERNAME', 'youraddress@gmail.com');
+define('SMTP_PASSWORD', 'abcdefghijklmnop');   // the 16-char app password, no spaces
+define('MAIL_FROM_EMAIL', 'youraddress@gmail.com');
 define('MAIL_FROM_NAME', 'PharmOS');
-```
 
 **For local testing (no mail server needed):** leave `MAIL_DEV_MODE` as `true`. Codes are appended to `logs/otp_dev.log` instead of being emailed — open that file after signing in to grab the code. No composer/PHPMailer dependency is needed; `api/lib/SmtpMailer.php` is a small self-contained SMTP client.
 
