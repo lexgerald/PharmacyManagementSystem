@@ -31,12 +31,12 @@ define('OTP_RESEND_COOLDOWN_SECONDS', 45); // minimum gap between resend request
 // instead so you can finish testing the flow without a mail provider.
 define('MAIL_DEV_MODE', false);
 
-define('SMTP_HOST', 'smtp.gmail.com');           // e.g. 'smtp.gmail.com' or 'sandbox.smtp.mailtrap.io'
+define('SMTP_HOST', '');           // e.g. 'smtp.gmail.com' or 'sandbox.smtp.mailtrap.io'
 define('SMTP_PORT', 587);          // 587 = STARTTLS, 465 = implicit TLS, 25/2525 = none
 define('SMTP_SECURE', 'tls');      // 'tls' | 'ssl' | ''
-define('SMTP_USERNAME', 'alexandregeraldwilliams@gmail.com');
-define('SMTP_PASSWORD', 'osxeqfnyznbqztag');
-define('MAIL_FROM_EMAIL', 'alexandregeraldwilliams@gmail.com');
+define('SMTP_USERNAME', '');
+define('SMTP_PASSWORD', '');     //osxeqfnyznbqztag
+define('MAIL_FROM_EMAIL', '');
 define('MAIL_FROM_NAME', 'PharmOS');
 
 /**
